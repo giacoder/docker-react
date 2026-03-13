@@ -18,6 +18,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
+      - name: Zip application
+        run: zip -r deploy.zip . -x "*.git*"
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
         with:
@@ -27,4 +29,4 @@ jobs:
           environment_name: Frontend-env
           region: us-east-2
           version_label: ${{ github.sha }}
-          deployment_package: .
+          deployment_package: deploy.zip
