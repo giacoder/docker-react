@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY package.json .
 RUN npm install
-# COPY . .    no need to copy for dev env, the files from my real computer are used
+COPY . .
 
 EXPOSE 5173
 
