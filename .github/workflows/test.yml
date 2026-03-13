@@ -1,4 +1,4 @@
-name: Tests
+name: CI/CD
 
 on: [push, pull_request]
 
@@ -11,3 +11,20 @@ jobs:
         run: docker build -t giacoder/docker-react -f Dockerfile.dev .
       - name: Run tests
         run: docker run -e CI=true giacoder/docker-react npm run tests-with-watch
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: frontend
+          environment_name: Frontend-env
+          region: us-east-2
+          version_label: ${{ github.sha }}
+          deployment_package: .
